@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "id": "enhancer",
+  "version": "${version}",
+  "name": "Enhancer",
+  "description": "",
+  "authors": [],
+  "contact": {
+    "repo": "https://github.com/inter/Enhancer"
+  },
+  "license": "All-Rights-Reserved",
+  "icon": "assets/enhancer/icon.png",
+  "environment": "client",
+  "entrypoints": {
+    "client": [
+
+    ],
+    "main": [
+      "ru.megantcs.enhancer.Enhancer"
+    ]
+  },
+  "mixins": [
+    "enhancer.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=${loader_version}",
+    "fabric": "*",
+    "minecraft": "${minecraft_version}"
+  }
+}
