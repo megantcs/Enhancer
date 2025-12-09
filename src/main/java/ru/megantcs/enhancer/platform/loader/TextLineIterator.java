@@ -1,5 +1,7 @@
 package ru.megantcs.enhancer.platform.loader;
 
+import ru.megantcs.enhancer.platform.loader.api.Iterator;
+
 public class TextLineIterator implements Iterator<String>
 {
     final String content;

@@ -4,6 +4,7 @@ import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.Varargs;
 import org.luaj.vm2.lib.VarArgFunction;
 import org.luaj.vm2.lib.jse.CoerceJavaToLua;
+import ru.megantcs.enhancer.platform.loader.api.LuaField;
 
 import java.lang.reflect.Field;
 

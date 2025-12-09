@@ -5,6 +5,8 @@ import org.luaj.vm2.lib.jse.JsePlatform;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.megantcs.enhancer.platform.interfaces.ResolveClient;
+import ru.megantcs.enhancer.platform.loader.api.LuaField;
+import ru.megantcs.enhancer.platform.loader.api.LuaMethod;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -81,7 +83,7 @@ public class LuaLoader implements ResolveClient {
 
             if (luaPreprocessor != null) {
                 fileContent = luaPreprocessor.processCode(fileContent);
-                message("file preprocessed");
+                message("file preprocessed " + fileContent);
             }
 
             chunks.add(environment.load(fileContent, path, environment));

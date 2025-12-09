@@ -1,4 +1,4 @@
-package ru.megantcs.enhancer.platform.loader;
+package ru.megantcs.enhancer.platform.loader.api;
 
 /**
  * Интерфейс для двух направленного итерирования по тексту
