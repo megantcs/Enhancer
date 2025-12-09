@@ -20,7 +20,8 @@
     ]
   },
   "mixins": [
-    "enhancer.mixins.json"
+    "enhancer.mixins.json",
+    "platform.mixins.json"
   ],
   "depends": {
     "fabricloader": ">=${loader_version}",
