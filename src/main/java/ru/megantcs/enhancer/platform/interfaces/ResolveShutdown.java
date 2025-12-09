@@ -1,4 +1,6 @@
 package ru.megantcs.enhancer.platform.interfaces;
 
-public interface ResolveShutdown {
+public interface ResolveShutdown
+{
+    void shutdown();
 }

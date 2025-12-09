@@ -1,6 +1,6 @@
 package ru.megantcs.enhancer.platform.interfaces;
 
-public interface Init
+public interface ResolverInit
 {
-    
+    void init();
 }

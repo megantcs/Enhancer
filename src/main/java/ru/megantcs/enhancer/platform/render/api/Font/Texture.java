@@ -1,10 +1,10 @@
-package thunder.hack.gui.font;
+package ru.megantcs.enhancer.platform.render.api.Font;
 
 import net.minecraft.util.Identifier;
 
 public class Texture extends Identifier {
     public Texture(String path) {
-        super("thunderhack", validatePath(path));
+        super("enchancer", validatePath(path));
     }
 
     public Texture(Identifier i) {

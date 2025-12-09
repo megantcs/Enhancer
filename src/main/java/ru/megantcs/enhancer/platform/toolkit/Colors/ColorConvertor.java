@@ -4,6 +4,47 @@ import java.awt.*;
 
 public class ColorConvertor
 {
+    public static String withAlpha(String hexColor, float alpha) {
+        if (hexColor == null || hexColor.isEmpty()) {
+            return hexColor;
+        }
+
+        // Обеспечиваем корректный формат
+        String color = hexColor.startsWith("#") ? hexColor : "#" + hexColor;
+
+        // Преобразуем alpha от 0.0-1.0 в 0-255
+        int alphaValue = Math.max(0, Math.min(255, (int)(alpha * 255)));
+        String alphaHex = String.format("%02X", alphaValue);
+
+        // Если цвет уже имеет альфа-канал (#AARRGGBB)
+        if (color.length() == 9) { // # + 8 символов
+            return "#" + alphaHex + color.substring(3); // Заменяем первые 2 символа после #
+        }
+        // Если цвет без альфа-канала (#RRGGBB)
+        else if (color.length() == 7) { // # + 6 символов
+            return "#" + alphaHex + color.substring(1);
+        }
+        // Если короткий формат (#RGB)
+        else if (color.length() == 4) { // # + 3 символа
+            // Расширяем до полного формата
+            String r = color.substring(1, 2);
+            String g = color.substring(2, 3);
+            String b = color.substring(3, 4);
+            return "#" + alphaHex + r + r + g + g + b + b;
+        }
+        // Если короткий с альфа (#ARGB)
+        else if (color.length() == 5) { // # + 4 символа
+            String a = color.substring(1, 2);
+            String r = color.substring(2, 3);
+            String g = color.substring(3, 4);
+            String b = color.substring(4, 5);
+            return "#" + alphaHex + r + r + g + g + b + b;
+        }
+
+        // Если неизвестный формат, возвращаем как есть
+        return color;
+    }
+
     public static Color hexToColor(String hex) {
         if (hex == null || hex.isEmpty()) {
             return Color.BLACK;

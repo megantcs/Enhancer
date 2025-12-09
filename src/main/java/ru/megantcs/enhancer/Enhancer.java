@@ -1,20 +1,46 @@
 package ru.megantcs.enhancer;
 
-import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
-import net.minecraft.client.MinecraftClient;
-import ru.megantcs.enhancer.platform.interfaces.Minecraft;
-import ru.megantcs.enhancer.platform.toolkit.Fabric.CommandBuilder;
-import ru.megantcs.enhancer.platform.widgets.screens.CodeEditor;
+import ru.megantcs.enhancer.platform.Resolver.ResolverClient;
+import ru.megantcs.enhancer.platform.loader.LuaLoader;
+import ru.megantcs.enhancer.platform.loader.LuaPreprocessor;
+import ru.megantcs.enhancer.platform.toolkit.Fabric.ModEntrypoint;
 
-public class Enhancer implements ModInitializer
+public class Enhancer extends ModEntrypoint
 {
-    @Override
-    public void onInitialize()
-    {
-        HudRenderCallback.EVENT.register((dc,t)->
-        {
+    public Enhancer() {
+        super("Enhancer");
+    }
 
-        });
+    @Override
+    public void bootstrap()
+    {
+        ResolverClient client = new ResolverClient();
+
+        client.register(LuaLoader.class);
+        client.initializeAll();
+
+        var ll = client.get(LuaLoader.class);
+        ll.useDebug();
+        ll.usePreprocessor();
+
+        ll.loadCode("""
+                #define DEBUG
+                            #define MAX(a, b) (a) > (b) ? (a) : (b)
+                
+                            #ifdef DEBUG
+                            print("Debug mode is ON")
+                            #endif
+                
+                            local x = MAX(10, 20)
+                            print("Max: " .. x)
+                
+                            #define MULTILINE \
+                                print("This is") \
+                                print("multiline macro")
+                
+                            MULTILINE
+                """, "test");
+
+
     }
 }

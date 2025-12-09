@@ -7,6 +7,8 @@
     "GameMenuScreenMixin"
   ],
   "client": [
+    "accessors.NativeImageAccessor",
+    "accessors.ScreenAccessor"
   ],
   "injectors": {
     "defaultRequire": 1

@@ -113,6 +113,7 @@ public class Brush
     }
 
     public static Brush of(String hex) {
+        if(Objects.equals(hex, "white")) return new Brush(Color.WHITE);
         return new Brush(ColorConvertor.hexToColor(hex));
     }
 

@@ -1,4 +1,7 @@
 package ru.megantcs.enhancer.platform.interfaces;
 
-public interface ResolveClient {
+public interface ResolveClient
+        extends ResolveShutdown, ResolverInit
+{
+
 }

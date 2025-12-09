@@ -1,4 +1,9 @@
 package ru.megantcs.enhancer.platform.loader;
 
-public class LuaMethod {
+import java.lang.annotation.*;
+
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.METHOD)
+public @interface LuaMethod {
+    String name() default "";
 }
