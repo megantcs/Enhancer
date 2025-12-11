@@ -9,7 +9,7 @@ import ru.megantcs.enhancer.platform.toolkit.Events.api.Event;
 public interface ScreenRenderCallback extends DrawableMixin
 {
     Event<ScreenRenderCallback> GAME_MENU_POST = EventFactory
-            .createArrayBackend(ScreenRenderCallback.class, (subscribes)->
+            .makeArrayBackend(ScreenRenderCallback.class, (subscribes)->
                     ((context, mouseX, mouseY, delta, ci) ->
     {
         for(var sub : subscribes) sub.render(context, mouseX, mouseY, delta, ci);

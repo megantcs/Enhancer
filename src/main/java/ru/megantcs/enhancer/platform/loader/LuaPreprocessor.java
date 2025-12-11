@@ -2,7 +2,7 @@ package ru.megantcs.enhancer.platform.loader;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.megantcs.enhancer.platform.loader.preprocessors.*;
+import ru.megantcs.enhancer.platform.loader.directives.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -15,11 +15,11 @@ public class LuaPreprocessor {
     private final Map<String, Function<String, String>> pragmaHandlers = new HashMap<>();
 
     public LuaPreprocessor() {
+        pipeline.addProcessor(new IncludeProcessor(this));
         pipeline.addProcessor(new DefineProcessor(defines));
         pipeline.addProcessor(new ConditionalProcessor(defines));
         pipeline.addProcessor(new ReplaceProcessor(defines));
         pipeline.addProcessor(new TernaryConverter());
-        pipeline.addProcessor(new IncludeProcessor());
         pipeline.addProcessor(new PragmaProcessor(pragmaHandlers));
     }
 

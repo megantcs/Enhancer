@@ -4,7 +4,7 @@ import java.lang.annotation.*;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
-public @interface LuaField {
+public @interface LuaExportField {
     boolean read() default true;
     boolean write() default true;
 }

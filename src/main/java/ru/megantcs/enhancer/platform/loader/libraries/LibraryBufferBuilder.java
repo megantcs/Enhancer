@@ -1,6 +1,5 @@
 package ru.megantcs.enhancer.platform.loader.libraries;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.render.*;
 import ru.megantcs.enhancer.platform.loader.api.LuaExportClass;
 import ru.megantcs.enhancer.platform.loader.api.LuaExportMethod;
@@ -11,7 +10,7 @@ import java.awt.*;
 import static ru.megantcs.enhancer.platform.loader.modules.impl.FabricEventsModules.MATRIX_STACK_INSTANCE;
 
 @LuaExportClass(name = "BufferBuilder")
-public class LBufferBuilder {
+public class LibraryBufferBuilder {
 
     @LuaExportMethod
     public void begin(int modeCode, int shaderCode) {
@@ -51,7 +50,7 @@ public class LBufferBuilder {
     }
 
     @LuaExportMethod
-    public LBufferBuilder vertex(float x, float y, float z, String hex) {
+    public LibraryBufferBuilder vertex(float x, float y, float z, String hex) {
         try {
             Color color = ColorConvertor.hexToColor(hex);
             Tessellator.getInstance().getBuffer()

@@ -4,7 +4,8 @@
   "package": "ru.megantcs.enhancer.platform.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
-    "GameMenuScreenMixin"
+    "GameMenuScreenMixin",
+    "InGameHudMixin"
   ],
   "client": [
     "accessors.NativeImageAccessor",

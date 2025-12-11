@@ -1,12 +1,14 @@
 package ru.megantcs.enhancer.platform.loader;
 
+import org.jetbrains.annotations.NotNull;
 import org.luaj.vm2.*;
 import org.luaj.vm2.lib.jse.JsePlatform;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.megantcs.enhancer.platform.interfaces.ResolveClient;
-import ru.megantcs.enhancer.platform.loader.api.LuaField;
-import ru.megantcs.enhancer.platform.loader.api.LuaMethod;
+import ru.megantcs.enhancer.platform.loader.api.LuaExportField;
+import ru.megantcs.enhancer.platform.loader.api.LuaExportMethod;
+import ru.megantcs.enhancer.platform.loader.modules.LuaModuleLoader;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -18,10 +20,12 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+@Deprecated
 public class LuaLoader implements ResolveClient {
     private static final Logger LOGGER = LoggerFactory.getLogger("Language Loader");
 
     private boolean debug;
+
     private Globals environment;
     private List<LuaValue> chunks;
     private LuaPreprocessor luaPreprocessor;
@@ -47,6 +51,10 @@ public class LuaLoader implements ResolveClient {
             luaPreprocessor = new LuaPreprocessor();
         }
         return luaPreprocessor;
+    }
+
+    public void rebuildPreprocessor() {
+        luaPreprocessor = new LuaPreprocessor();
     }
 
     public void offPreprocessor() {
@@ -108,7 +116,7 @@ public class LuaLoader implements ResolveClient {
 
             Method[] methods = clazz.getDeclaredMethods();
             for (Method method : methods) {
-                LuaMethod annotation = method.getAnnotation(LuaMethod.class);
+                LuaExportMethod annotation = method.getAnnotation(LuaExportMethod.class);
                 if (annotation != null && Modifier.isPublic(method.getModifiers())) {
                     String methodName = annotation.name().isEmpty() ? method.getName() : annotation.name();
                     moduleTable.set(methodName, LuaUtils.createMethodWrapper(method, instance, LOGGER));
@@ -118,7 +126,7 @@ public class LuaLoader implements ResolveClient {
 
             Field[] fields = clazz.getDeclaredFields();
             for (Field field : fields) {
-                LuaField annotation = field.getAnnotation(LuaField.class);
+                LuaExportField annotation = field.getAnnotation(LuaExportField.class);
                 if (annotation != null && Modifier.isPublic(field.getModifiers())) {
                     if (annotation.read() || annotation.write()) {
                         moduleTable.set(field.getName(), new FieldWrapper(field, instance, annotation));
@@ -139,8 +147,9 @@ public class LuaLoader implements ResolveClient {
         }
     }
 
-    public boolean loadCode(String code, String chunkName) {
+    public boolean loadCode(@NotNull String code, @NotNull String chunkName) {
         Objects.requireNonNull(code);
+        Objects.requireNonNull(chunkName);
 
         if(code.isEmpty()) {
             error("code is empty: " + code);

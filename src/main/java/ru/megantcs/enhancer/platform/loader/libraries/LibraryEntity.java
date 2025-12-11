@@ -5,11 +5,11 @@ import ru.megantcs.enhancer.platform.loader.api.LuaExportClass;
 import ru.megantcs.enhancer.platform.loader.api.LuaExportMethod;
 
 @LuaExportClass(name = "Entity")
-public class LEntity
+public class LibraryEntity
 {
     private final Entity entity;
 
-    public LEntity(Entity entity) {
+    public LibraryEntity(Entity entity) {
         this.entity = entity;
     }
 

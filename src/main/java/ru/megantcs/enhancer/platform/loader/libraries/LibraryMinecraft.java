@@ -1,13 +1,12 @@
 package ru.megantcs.enhancer.platform.loader.libraries;
 
 import net.minecraft.client.MinecraftClient;
-import org.apache.commons.compress.compressors.pack200.Pack200Utils;
 import ru.megantcs.enhancer.platform.interfaces.Minecraft;
 import ru.megantcs.enhancer.platform.loader.api.LuaExportClass;
 import ru.megantcs.enhancer.platform.loader.api.LuaExportMethod;
 
 @LuaExportClass(name = "Minecraft")
-public class LMinecraft
+public class LibraryMinecraft
 {
     @LuaExportMethod
     public String fpsString() {
@@ -21,12 +20,16 @@ public class LMinecraft
 
 
     @LuaExportMethod
-    public LEntity getPlayer() {
-        return new LEntity(Minecraft.mc.player);
+    public LibraryEntity getPlayer() {
+        return new LibraryEntity(Minecraft.mc.player);
+    }
+
+    public LibraryWindow getWindow() {
+        return new LibraryWindow(MinecraftClient.getInstance().getWindow());
     }
 
     @LuaExportMethod
-    public static LMinecraft getInstance() {
-        return new LMinecraft();
+    public static LibraryMinecraft getInstance() {
+        return new LibraryMinecraft();
     }
 }

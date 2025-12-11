@@ -10,7 +10,7 @@ import static ru.megantcs.enhancer.platform.loader.modules.impl.FabricEventsModu
 import static ru.megantcs.enhancer.platform.loader.modules.impl.FabricEventsModules.MATRIX_STACK_INSTANCE;
 
 @LuaExportClass(name = "RenderUtil")
-public class LRenderUtil
+public class LibraryRenderUtil
 {
     @LuaExportMethod
     public static void drawText(float x, float y, String text, String hex, boolean shadow)

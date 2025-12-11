@@ -4,16 +4,16 @@ import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.Varargs;
 import org.luaj.vm2.lib.VarArgFunction;
 import org.luaj.vm2.lib.jse.CoerceJavaToLua;
-import ru.megantcs.enhancer.platform.loader.api.LuaField;
+import ru.megantcs.enhancer.platform.loader.api.LuaExportField;
 
 import java.lang.reflect.Field;
 
 public class FieldWrapper extends VarArgFunction {
     private final Field field;
     private final Object instance;
-    private final LuaField annotation;
+    private final LuaExportField annotation;
 
-    FieldWrapper(Field field, Object instance, LuaField annotation) {
+    FieldWrapper(Field field, Object instance, LuaExportField annotation) {
         this.field = field;
         this.instance = instance;
         this.annotation = annotation;

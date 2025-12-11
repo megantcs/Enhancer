@@ -6,7 +6,6 @@ import java.util.List;
 public class TextPipeline {
     final List<Processor> processors = new ArrayList<>();
 
-
     public interface Processor {
         String process(String input);
     }

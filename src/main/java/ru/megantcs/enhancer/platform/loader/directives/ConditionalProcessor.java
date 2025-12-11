@@ -1,7 +1,7 @@
-package ru.megantcs.enhancer.platform.loader.preprocessors;
+package ru.megantcs.enhancer.platform.loader.directives;
 
 import ru.megantcs.enhancer.platform.loader.TextPipeline;
-import ru.megantcs.enhancer.platform.loader.preprocessors.DefineProcessor.MacroDefinition;
+import ru.megantcs.enhancer.platform.loader.directives.DefineProcessor.MacroDefinition;
 
 import java.util.Map;
 import java.util.Stack;

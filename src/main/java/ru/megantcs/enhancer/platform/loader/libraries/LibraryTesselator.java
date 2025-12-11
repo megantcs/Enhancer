@@ -5,14 +5,14 @@ import ru.megantcs.enhancer.platform.loader.api.LuaExportClass;
 import ru.megantcs.enhancer.platform.loader.api.LuaExportMethod;
 
 @LuaExportClass(name = "Tesselator")
-public class LTesselator
+public class LibraryTesselator
 {
-    public LTesselator() {}
+    public LibraryTesselator() {}
 
     @LuaExportMethod
-    public static LBufferBuilder getBuffer()
+    public static LibraryBufferBuilder getBuffer()
     {
-        return new LBufferBuilder();
+        return new LibraryBufferBuilder();
     }
 
     @LuaExportMethod

@@ -1,4 +1,4 @@
-package ru.megantcs.enhancer.platform.loader.preprocessors;
+package ru.megantcs.enhancer.platform.loader.directives;
 
 import ru.megantcs.enhancer.platform.loader.LuaPreprocessor;
 import ru.megantcs.enhancer.platform.loader.TextPipeline;
@@ -6,8 +6,6 @@ import ru.megantcs.enhancer.platform.loader.TextPipeline;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Stack;
 
 public class IncludeProcessor implements TextPipeline.Processor {

@@ -1,80 +1,50 @@
 package ru.megantcs.enhancer;
 
-import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
-import net.minecraft.client.gui.DrawContext;
 import net.minecraft.text.Text;
 import ru.megantcs.enhancer.platform.Resolver.ResolverClient;
-import ru.megantcs.enhancer.platform.loader.LuaLoader;
-import ru.megantcs.enhancer.platform.loader.LuaPreprocessor;
-import ru.megantcs.enhancer.platform.loader.api.LuaMethod;
-import ru.megantcs.enhancer.platform.render.api.Graphics.GraphicsContext;
-import ru.megantcs.enhancer.platform.render.api.Graphics.GraphicsSystem;
-import ru.megantcs.enhancer.platform.toolkit.Colors.ColorConvertor;
-import ru.megantcs.enhancer.platform.toolkit.Events.interfaces.Action;
+import ru.megantcs.enhancer.platform.loader.LuaEngine;
+import ru.megantcs.enhancer.platform.loader.LuaScriptManager;
+import ru.megantcs.enhancer.platform.loader.libraries.*;
+import ru.megantcs.enhancer.platform.loader.modules.impl.FabricEventsModules;
 import ru.megantcs.enhancer.platform.toolkit.Fabric.CommandBuilder;
 import ru.megantcs.enhancer.platform.toolkit.Fabric.ModEntrypoint;
 
-import java.awt.*;
-import java.util.ArrayList;
-import java.util.List;
-
-
 public class Enhancer extends ModEntrypoint
 {
-
-    public static class DrawCluster {
-        private static List<Action<DrawContext>> draws = new ArrayList<>();
-
-        public static void execute(Action<DrawContext> draw) {
-            draws.add(draw);
-        }
-
-        public static void clearAll() {
-            draws.clear();
-        }
-
-        public static void drawAll() {
-            HudRenderCallback.EVENT.register((e,t)->{
-            for(var draw : draws)
-                draw.invoke(e);
-            });
-        }
-    }
-
-    public static class RenderModule
-    {
-        @LuaMethod
-        public void renderDrawRect(float x1, float y1, float x2, float y2, String hex)
-        {
-            DrawCluster.execute((e)->{
-                GraphicsContext.rect(e.getMatrices(), x1, y1, x2,y2, ColorConvertor.hexToColor(hex));
-            });
-        }
-    }
+    private LuaScriptManager scriptManager;
 
     public Enhancer() {
         super("Enhancer");
     }
 
     @Override
-    public void bootstrap()
-    {
+    public void bootstrap() {
         ResolverClient client = new ResolverClient();
-
-        client.register(LuaLoader.class);
+        client.register(LuaScriptManager.class);
         client.initializeAll();
 
-        var ll = client.get(LuaLoader.class);
-        ll.useDebug();
-        var p = ll.usePreprocessor();
+        var scriptManager = new LuaScriptManager();
 
-        CommandBuilder.create("luaEnc").orArg("reload", (e)->{
-            DrawCluster.clearAll();
-            ll.registerModule("rm",new RenderModule());
-            ll.loadFile(combinePath("test.lua"));
-            e.getSource().sendFeedback(Text.of("success reload"));
-        }).register();
+        LuaEngine.INSTANCE.registerClass(LibraryBufferBuilder.class);
+        LuaEngine.INSTANCE.registerClass(LibraryTesselator.class);
+        LuaEngine.INSTANCE.registerClass(LibraryRenderSystem.class);
+        LuaEngine.INSTANCE.registerClass(LibraryRenderUtil.class);
+        LuaEngine.INSTANCE.registerClass(LibraryMinecraft.class);
+        LuaEngine.INSTANCE.registerClass(LibraryEntity.class);
+        LuaEngine.INSTANCE.registerClass(LibraryWindow.class);
 
-        DrawCluster.drawAll();
+        scriptManager.loadModule(new FabricEventsModules());
+        LOGGER.error("load file: {}",scriptManager.loadFile(combinePath("test.lua")));
+
+        CommandBuilder.create("luaEnc")
+                .orArg("reload", (e) -> {
+                    scriptManager.reload();
+                    e.getSource().sendFeedback(Text.of("Scripts reloaded successfully"));
+                })
+                .orArg("clear", (e) -> {
+                    scriptManager.shutdown();
+                    e.getSource().sendFeedback(Text.of("All scripts cleared"));
+                })
+                .register();
     }
 }

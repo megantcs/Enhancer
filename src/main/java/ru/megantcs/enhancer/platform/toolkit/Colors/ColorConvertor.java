@@ -1,6 +1,7 @@
 package ru.megantcs.enhancer.platform.toolkit.Colors;
 
 import java.awt.*;
+import java.util.Objects;
 
 public class ColorConvertor
 {
@@ -9,31 +10,24 @@ public class ColorConvertor
             return hexColor;
         }
 
-        // Обеспечиваем корректный формат
         String color = hexColor.startsWith("#") ? hexColor : "#" + hexColor;
 
-        // Преобразуем alpha от 0.0-1.0 в 0-255
         int alphaValue = Math.max(0, Math.min(255, (int)(alpha * 255)));
         String alphaHex = String.format("%02X", alphaValue);
 
-        // Если цвет уже имеет альфа-канал (#AARRGGBB)
-        if (color.length() == 9) { // # + 8 символов
-            return "#" + alphaHex + color.substring(3); // Заменяем первые 2 символа после #
+        if (color.length() == 9) {
+            return "#" + alphaHex + color.substring(3);
         }
-        // Если цвет без альфа-канала (#RRGGBB)
-        else if (color.length() == 7) { // # + 6 символов
+        else if (color.length() == 7) {
             return "#" + alphaHex + color.substring(1);
         }
-        // Если короткий формат (#RGB)
-        else if (color.length() == 4) { // # + 3 символа
-            // Расширяем до полного формата
+        else if (color.length() == 4) {
             String r = color.substring(1, 2);
             String g = color.substring(2, 3);
             String b = color.substring(3, 4);
             return "#" + alphaHex + r + r + g + g + b + b;
         }
-        // Если короткий с альфа (#ARGB)
-        else if (color.length() == 5) { // # + 4 символа
+        else if (color.length() == 5) {
             String a = color.substring(1, 2);
             String r = color.substring(2, 3);
             String g = color.substring(3, 4);
@@ -41,11 +35,14 @@ public class ColorConvertor
             return "#" + alphaHex + r + r + g + g + b + b;
         }
 
-        // Если неизвестный формат, возвращаем как есть
         return color;
     }
 
-    public static Color hexToColor(String hex) {
+    public static Color hexToColor(String hex)
+    {
+        if(Objects.equals(hex, "white")) return Color.white;
+        if(Objects.equals(hex, "red")) return Color.red;
+
         if (hex == null || hex.isEmpty()) {
             return Color.BLACK;
         }

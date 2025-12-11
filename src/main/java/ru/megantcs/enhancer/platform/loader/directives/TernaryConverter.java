@@ -1,4 +1,4 @@
-package ru.megantcs.enhancer.platform.loader.preprocessors;
+package ru.megantcs.enhancer.platform.loader.directives;
 
 import ru.megantcs.enhancer.platform.loader.TextPipeline;
 

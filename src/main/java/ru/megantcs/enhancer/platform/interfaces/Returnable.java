@@ -1,4 +1,10 @@
 package ru.megantcs.enhancer.platform.interfaces;
 
-public class Returnable {
+@FunctionalInterface
+public interface Returnable<TReturnType>
+{
+    Returnable<Boolean> FALSE = () -> false;
+    Returnable<Boolean> TRUE  = () -> true;
+
+    TReturnType get();
 }
