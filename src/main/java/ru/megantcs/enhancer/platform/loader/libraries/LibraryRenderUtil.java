@@ -1,6 +1,7 @@
 package ru.megantcs.enhancer.platform.loader.libraries;
 
 import net.minecraft.client.MinecraftClient;
+import ru.megantcs.enhancer.platform.interfaces.Minecraft;
 import ru.megantcs.enhancer.platform.loader.api.LuaExportClass;
 import ru.megantcs.enhancer.platform.loader.api.LuaExportMethod;
 import ru.megantcs.enhancer.platform.render.api.Graphics.GraphicsContext;
@@ -17,6 +18,11 @@ public class LibraryRenderUtil
     {
         DRAW_CONTEXT_INSTANCE.drawText(MinecraftClient.getInstance().textRenderer, text, (int)x, (int)y,
                 ColorConvertor.hexToColor(hex).getRGB(), shadow);
+    }
+
+    @LuaExportMethod
+    public static int calcTextWidth(String text) {
+        return Minecraft.mc.textRenderer.getWidth(text);
     }
 
     @LuaExportMethod

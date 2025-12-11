@@ -7,7 +7,7 @@ import java.util.Objects;
 
 public class FinishedFieldReflection
 {
-    public static void finishObj(@NotNull Object obj) throws IllegalAccessException {
+    public static void finishObj(@NotNull Object obj) {
         Objects.requireNonNull(obj);
 
         var fields = obj.getClass().getDeclaredFields();

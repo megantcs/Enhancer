@@ -19,7 +19,8 @@ public class Enhancer extends ModEntrypoint
     }
 
     @Override
-    public void bootstrap() {
+    public void bootstrap()
+    {
         ResolverClient client = new ResolverClient();
         client.register(LuaScriptManager.class);
         client.initializeAll();

@@ -11,22 +11,19 @@ import net.minecraft.scoreboard.ScoreboardPlayerScore;
 import net.minecraft.scoreboard.Team;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
-import org.luaj.vm2.LuaTable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import ru.megantcs.enhancer.platform.hook.ScoreboardRenderHook;
 import ru.megantcs.enhancer.platform.interfaces.Minecraft;
-import ru.megantcs.enhancer.platform.loader.LuaEngine;
 
 import java.awt.*;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import static ru.megantcs.enhancer.platform.loader.modules.impl.FabricEventsModule.*;
 
 @Mixin(InGameHud.class)
 public class InGameHudMixin implements Minecraft
@@ -83,8 +80,8 @@ public class InGameHudMixin implements Minecraft
         int scoreboardLeft = scoreboardRight - maxWidth - padding * 2;
         int currentEntryIndex = 0;
 
-        int rowBackgroundColor = Color.blue.getRGB();
-        int headerBackgroundColor = Color.red.getRGB();
+        int rowBackgroundColor = Minecraft.mc.options.getTextBackgroundColor(0.4F);
+        int headerBackgroundColor = Minecraft.mc.options.getTextBackgroundColor(0.4F);
 
         for (Pair<ScoreboardPlayerScore, Text> entry : scoreEntries) {
             currentEntryIndex++;
@@ -98,7 +95,7 @@ public class InGameHudMixin implements Minecraft
             int rowRightEdge = this.scaledWidth - padding + 2;
             int rowLeftEdge = scoreboardLeft - 2;
 
-            renderBackgroundScoreboard(context, rowLeftEdge, rowY, rowRightEdge, rowY + 9, rowBackgroundColor);
+            enhancer$scoreboard$renderBackground(context, rowLeftEdge, rowY, rowRightEdge, rowY + 9, rowBackgroundColor);
             context.drawText(textRenderer, playerNameText, scoreboardLeft, rowY, -1, false);
 
             int scoreTextWidth = textRenderer.getWidth(scoreText);
@@ -107,8 +104,8 @@ public class InGameHudMixin implements Minecraft
             if (currentEntryIndex == displayedScores.size()) {
                 int headerY = rowY - 9 - 1;
 
-                renderHeaderScoreboard(context, rowLeftEdge, headerY, rowRightEdge, rowY - 1, headerBackgroundColor);
-                renderSeparatorScoreboard(context, scoreboardLeft, rowY, rowRightEdge, rowBackgroundColor);
+                enhancer$scoreboard$renderHeader(context, rowLeftEdge, headerY, rowRightEdge, rowY - 1, headerBackgroundColor);
+                enhancer$scoreboard$renderSeparator(context, scoreboardLeft, rowY, rowRightEdge, rowBackgroundColor);
 
                 int titleX = scoreboardLeft + maxWidth / 2 - titleWidth / 2;
                 context.drawText(textRenderer, objectiveTitle, titleX, rowY - 9, -1, false);
@@ -116,7 +113,8 @@ public class InGameHudMixin implements Minecraft
         }
     }
 
-    private void renderSeparatorScoreboard(DrawContext context, int scoreboardLeft, int rowY, int rowRightEdge, int rowBackgroundColor) {
+    @Unique
+    private void enhancer$scoreboard$renderSeparator(DrawContext context, int scoreboardLeft, int rowY, int rowRightEdge, int rowBackgroundColor) {
         var cancel = ScoreboardRenderHook.RENDER_SEPARATOR.emit(new ScoreboardRenderHook.RenderInfo(
                 context,
                 scoreboardLeft,
@@ -128,23 +126,24 @@ public class InGameHudMixin implements Minecraft
         if(!cancel) context.fill(scoreboardLeft - 2, rowY - 1, rowRightEdge, rowY, rowBackgroundColor);
     }
 
-    private void renderBackgroundScoreboard(DrawContext context,
-                                            int left, int top,
-                                            int right, int bottom,
-                                            int backgroundColor) {
+    @Unique
+    private void enhancer$scoreboard$renderBackground(DrawContext context,
+                                                      int left, int top,
+                                                      int right, int bottom,
+                                                      int backgroundColor) {
         var cancel = ScoreboardRenderHook.RENDER_BACKGROUND.emit(new ScoreboardRenderHook.RenderInfo(
                 context, left, top, right, bottom, backgroundColor));
 
         if(!cancel) context.fill(left, top, right, bottom, Color.white.getRGB());
     }
 
-    private void renderHeaderScoreboard(DrawContext context,
-                                        int left, int top,
-                                        int right, int bottom,
-                                        int headerColor) {
+    @Unique
+    private void enhancer$scoreboard$renderHeader(DrawContext context,
+                                                  int left, int top,
+                                                  int right, int bottom,
+                                                  int headerColor) {
         var cancel = ScoreboardRenderHook.RENDER_HEADER.emit(new ScoreboardRenderHook.RenderInfo(
-                context, left, top, right, bottom, headerColor
-        ));
+                context, left, top, right, bottom, headerColor));
 
         if(!cancel) context.fill(left, top, right, bottom, Color.yellow.getRGB());
     }

@@ -3,11 +3,9 @@ package ru.megantcs.enhancer.platform.toolkit.Events;
 import org.jetbrains.annotations.NotNull;
 import ru.megantcs.enhancer.platform.toolkit.Events.interfaces.Action;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 public class ActionEvent<T>
 {
