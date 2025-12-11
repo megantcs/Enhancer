@@ -2,19 +2,25 @@ package ru.megantcs.enhancer.platform.loader.modules.impl;
 
 import org.luaj.vm2.LuaValue;
 import ru.megantcs.enhancer.platform.hook.ScoreboardRenderHook;
-import ru.megantcs.enhancer.platform.interfaces.Func;
 import ru.megantcs.enhancer.platform.loader.LuaEngine;
+import ru.megantcs.enhancer.platform.loader.LuaTableInstance;
 import ru.megantcs.enhancer.platform.loader.modules.LuaModule;
 import ru.megantcs.enhancer.platform.loader.modules.LuaModuleData;
+import ru.megantcs.enhancer.platform.toolkit.api.FinishedField;
 
 @LuaModuleData(name = "Mixins")
-public class MixinsModules extends LuaModule
+public class MixinsModule extends LuaModule
 {
     private Runnable chunkExecute;
     private LuaEngine engine;
 
+    @FinishedField
     private LuaValue scoreboard$background;
+
+    @FinishedField
     private LuaValue scoreboard$separator;
+
+    @FinishedField
     private LuaValue scoreboard$header;
 
     @Override
@@ -44,18 +50,20 @@ public class MixinsModules extends LuaModule
         ScoreboardRenderHook.RENDER_BACKGROUND.register((data)->{
             if(scoreboard$background == null) return false;
             try {
-                scoreboard$background.call();
+                scoreboard$background.call(
+                        LuaTableInstance.generate(data));
                 return true;
             } catch (RuntimeException e) {
                 LOGGER.error("error hook", e);
             }
-            return true;
+            return false;
         }, "scoreboard$background");
 
         ScoreboardRenderHook.RENDER_SEPARATOR.register((data)->{
             if(scoreboard$separator == null) return false;
             try {
-                scoreboard$separator.call();
+                scoreboard$separator.call(
+                        LuaTableInstance.generate(data));
                 return true;
             } catch (RuntimeException e) {
                 LOGGER.error("error hook", e);
@@ -66,7 +74,8 @@ public class MixinsModules extends LuaModule
         ScoreboardRenderHook.RENDER_HEADER.register((data)->{
             if(scoreboard$header == null) return false;
             try {
-                scoreboard$header.call();
+                scoreboard$header.call(
+                        LuaTableInstance.generate(data));
                 return true;
             } catch (RuntimeException e) {
                 LOGGER.error("error hook", e);
@@ -82,9 +91,9 @@ public class MixinsModules extends LuaModule
 
     private void loadExecuteEvents()
     {
-        scoreboard$background = engine.getMethod("scoreboard$background");
-        scoreboard$separator  = engine.getMethod("scoreboard$separator");
-        scoreboard$header     = engine.getMethod("scoreboard$header");
+        scoreboard$background = engine.getMethod("mixin@scoreboard$background");
+        scoreboard$separator  = engine.getMethod("mixin@scoreboard$separator");
+        scoreboard$header     = engine.getMethod("mixin@scoreboard$header");
 
         logOr("mixin found scoreboard$background", scoreboard$background != null);
         logOr("mixin found scoreboard$separator", scoreboard$separator != null);

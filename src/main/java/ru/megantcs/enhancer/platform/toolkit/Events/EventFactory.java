@@ -35,11 +35,11 @@ public class EventFactory
         return new FuncEvent<>(new CopyOnWriteArrayList<>(), null);
     }
 
-    public static <T1, T2> FuncEvent<T1, T2> makeFuncEvent(T1 defaultReturnType) {
+    public static <T1, T2> FuncEvent<T1, T2> makeFuncEvent(T2 defaultReturnType) {
         return new FuncEvent<>(new CopyOnWriteArrayList<>(), defaultReturnType);
     }
 
-    public static <T1, T2> FuncEvent<T1, T2> makeFuncEventArray(T1 defaultReturnType) {
+    public static <T1, T2> FuncEvent<T1, T2> makeFuncEventArray(T2 defaultReturnType) {
         return new FuncEvent<>(new ArrayList<>(), defaultReturnType);
     }
 }

@@ -3,7 +3,6 @@ package ru.megantcs.enhancer.platform.mixin;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.mojang.datafixers.util.Pair;
-import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.hud.InGameHud;
 import net.minecraft.scoreboard.Scoreboard;
@@ -15,7 +14,6 @@ import net.minecraft.util.Formatting;
 import org.luaj.vm2.LuaTable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.gen.Invoker;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -26,10 +24,9 @@ import ru.megantcs.enhancer.platform.loader.LuaEngine;
 import java.awt.*;
 import java.util.Collection;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
-import static ru.megantcs.enhancer.platform.loader.modules.impl.FabricEventsModules.*;
+import static ru.megantcs.enhancer.platform.loader.modules.impl.FabricEventsModule.*;
 
 @Mixin(InGameHud.class)
 public class InGameHudMixin implements Minecraft
@@ -120,7 +117,7 @@ public class InGameHudMixin implements Minecraft
     }
 
     private void renderSeparatorScoreboard(DrawContext context, int scoreboardLeft, int rowY, int rowRightEdge, int rowBackgroundColor) {
-        ScoreboardRenderHook.RENDER_SEPARATOR.get(new ScoreboardRenderHook.RenderInfo(
+        var cancel = ScoreboardRenderHook.RENDER_SEPARATOR.emit(new ScoreboardRenderHook.RenderInfo(
                 context,
                 scoreboardLeft,
                 rowY,
@@ -128,52 +125,27 @@ public class InGameHudMixin implements Minecraft
                 rowY,
                 rowBackgroundColor));
 
-        if(renderSeparatorScoreboard == null)
-        context.fill(scoreboardLeft - 2, rowY - 1, rowRightEdge, rowY, rowBackgroundColor);
-        else
-        {
-            LuaTable table = new LuaTable();
-            table.set("left", scoreboardLeft);
-            table.set("right", rowRightEdge);
-            table.set("rowY", rowY);
-            table.set("color", rowBackgroundColor);
-
-            LuaEngine.INSTANCE.execute(renderSeparatorScoreboard, table);
-        }
+        if(!cancel) context.fill(scoreboardLeft - 2, rowY - 1, rowRightEdge, rowY, rowBackgroundColor);
     }
 
     private void renderBackgroundScoreboard(DrawContext context,
                                             int left, int top,
                                             int right, int bottom,
                                             int backgroundColor) {
-        if(renderBackgroundScoreboard == null)
-        context.fill(left, top, right, bottom, Color.white.getRGB());
-        else {
-            LuaTable table = new LuaTable();
-            table.set("left", left);
-            table.set("right", right);
-            table.set("top", top);
-            table.set("bottom", bottom);
-            table.set("color", backgroundColor);
+        var cancel = ScoreboardRenderHook.RENDER_BACKGROUND.emit(new ScoreboardRenderHook.RenderInfo(
+                context, left, top, right, bottom, backgroundColor));
 
-            LuaEngine.INSTANCE.execute(renderBackgroundScoreboard, table);
-        }
+        if(!cancel) context.fill(left, top, right, bottom, Color.white.getRGB());
     }
 
     private void renderHeaderScoreboard(DrawContext context,
                                         int left, int top,
                                         int right, int bottom,
                                         int headerColor) {
-        if(renderHeaderScoreboard == null)
-        context.fill(left, top, right, bottom, Color.yellow.getRGB());
-        else {
-            LuaTable table = new LuaTable();
-            table.set("left", left);
-            table.set("right", right);
-            table.set("top", top);
-            table.set("bottom", bottom);
-            table.set("color", headerColor);
-            LuaEngine.INSTANCE.execute(renderHeaderScoreboard, table);
-        }
+        var cancel = ScoreboardRenderHook.RENDER_HEADER.emit(new ScoreboardRenderHook.RenderInfo(
+                context, left, top, right, bottom, headerColor
+        ));
+
+        if(!cancel) context.fill(left, top, right, bottom, Color.yellow.getRGB());
     }
 }

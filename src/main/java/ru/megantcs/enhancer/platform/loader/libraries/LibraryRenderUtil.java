@@ -6,8 +6,8 @@ import ru.megantcs.enhancer.platform.loader.api.LuaExportMethod;
 import ru.megantcs.enhancer.platform.render.api.Graphics.GraphicsContext;
 import ru.megantcs.enhancer.platform.toolkit.Colors.ColorConvertor;
 
-import static ru.megantcs.enhancer.platform.loader.modules.impl.FabricEventsModules.DRAW_CONTEXT_INSTANCE;
-import static ru.megantcs.enhancer.platform.loader.modules.impl.FabricEventsModules.MATRIX_STACK_INSTANCE;
+import static ru.megantcs.enhancer.platform.loader.modules.impl.FabricEventsModule.DRAW_CONTEXT_INSTANCE;
+import static ru.megantcs.enhancer.platform.loader.modules.impl.FabricEventsModule.MATRIX_STACK_INSTANCE;
 
 @LuaExportClass(name = "RenderUtil")
 public class LibraryRenderUtil

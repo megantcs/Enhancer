@@ -1,4 +1,10 @@
-package ru.megantcs.enhancer.platform.toolkit.Interfaces;
+package ru.megantcs.enhancer.platform.toolkit.api;
 
-public class FinishedField {
+import java.lang.annotation.*;
+
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.FIELD})
+public @interface FinishedField
+{
+
 }

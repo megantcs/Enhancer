@@ -1,28 +1,44 @@
 package ru.megantcs.enhancer.platform.loader.directives;
 
+import ru.megantcs.enhancer.platform.loader.LuaUtils;
 import ru.megantcs.enhancer.platform.loader.TextPipeline;
 import ru.megantcs.enhancer.platform.loader.directives.DefineProcessor.MacroDefinition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class ReplaceProcessor implements TextPipeline.Processor {
     private static final Logger LOG = LoggerFactory.getLogger(ReplaceProcessor.class);
+
     final Map<String, MacroDefinition> defines;
+    final Map<String, String> replaceMap;
 
     public ReplaceProcessor(Map<String, MacroDefinition> defines) {
         this.defines = defines;
+        this.replaceMap = new HashMap<>();
+        init();
+    }
+
+    private void init() {
+        replaceMap.putAll(LuaUtils.fixNamesMap());
     }
 
     @Override
-    public String process(String input) {
+    public String process(String input)
+    {
         String result = input;
         boolean changed;
         int maxIterations = 100;
         int iteration = 0;
+
+        for(var key : replaceMap.keySet())
+        {
+            result = result.replace(key, replaceMap.get(key));
+        }
 
         do {
             changed = false;

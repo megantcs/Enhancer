@@ -7,7 +7,7 @@ import ru.megantcs.enhancer.platform.toolkit.Colors.ColorConvertor;
 
 import java.awt.*;
 
-import static ru.megantcs.enhancer.platform.loader.modules.impl.FabricEventsModules.MATRIX_STACK_INSTANCE;
+import static ru.megantcs.enhancer.platform.loader.modules.impl.FabricEventsModule.MATRIX_STACK_INSTANCE;
 
 @LuaExportClass(name = "BufferBuilder")
 public class LibraryBufferBuilder {

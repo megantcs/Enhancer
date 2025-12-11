@@ -7,6 +7,8 @@ import org.luaj.vm2.lib.jse.CoerceJavaToLua;
 import org.slf4j.Logger;
 
 import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.Map;
 
 public class LuaUtils
 {
@@ -32,5 +34,24 @@ public class LuaUtils
                 }
             }
         };
+    }
+
+    public static Map<String, String> fixNamesMap() {
+        Map<String, String> map = new HashMap<>();
+        map.put("~", "_");
+        map.put("@", "_");
+        map.put("$", "_");
+
+        return map;
+    }
+
+    public static String fixName(String name)
+    {
+        var result = name;
+        for(var key : fixNamesMap().keySet()) {
+            result = result.replace(key, fixNamesMap().get(key));
+        }
+
+        return result;
     }
 }

@@ -73,7 +73,6 @@ public class LuaEngine {
             return true;
         } catch (Exception e) {
             LOGGER.error("error load script: {}", chunkName, e);
-            LOGGER.error(code);
             return false;
         }
     }
@@ -92,6 +91,7 @@ public class LuaEngine {
             return true;
         } catch (Exception e) {
             LOGGER.error("error execute chunk", e);
+            LOGGER.error(value.getContent());
             return false;
         }
     }
@@ -160,7 +160,7 @@ public class LuaEngine {
     }
 
     public LuaValue getType(String name) {
-        return environment.get(name);
+        return environment.get(LuaUtils.fixName(name));
     }
 
     public LuaValue getMethod(String name) {

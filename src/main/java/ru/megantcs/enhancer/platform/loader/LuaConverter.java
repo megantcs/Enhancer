@@ -14,9 +14,6 @@ import java.util.*;
 public class LuaConverter {
     private static final Logger LOGGER = LoggerFactory.getLogger(LuaConverter.class);
 
-    /**
-     * Конвертирует Java-объект в Lua-значение
-     */
     public static LuaValue toLua(Object obj) {
         if (obj == null) return LuaValue.NIL;
 
@@ -49,13 +46,9 @@ public class LuaConverter {
             return wrapClassInstance(obj);
         }
 
-        // По умолчанию - пытаемся создать таблицу из публичных полей
         return createTableFromObject(obj);
     }
 
-    /**
-     * Конвертирует Lua-значение в Java-объект указанного типа
-     */
     @SuppressWarnings("unchecked")
     public static <T> T fromLua(LuaValue value, Class<T> targetType) {
         if (value.isnil()) return null;
@@ -73,7 +66,6 @@ public class LuaConverter {
         if (targetType == Long.class || targetType == long.class)
             return (T) Long.valueOf(value.tolong());
 
-        // Для списков и мап
         if (targetType == List.class && value.istable()) {
             List<Object> list = new ArrayList<>();
             LuaTable table = value.checktable();
@@ -90,23 +82,17 @@ public class LuaConverter {
         return null;
     }
 
-    /**
-     * Обертывает экземпляр класса в Lua-таблицу с методами
-     */
     private static LuaTable wrapClassInstance(Object instance) {
         Class<?> clazz = instance.getClass();
         LuaTable table = new LuaTable();
 
-        // Добавляем поле __instance для хранения ссылки на Java-объект
         table.set("__instance", LuaUserdata.userdataOf(instance));
         table.set("__class", LuaValue.valueOf(clazz.getSimpleName()));
 
-        // Автоматически добавляем все публичные методы
         if (clazz.getAnnotation(ru.megantcs.enhancer.platform.loader.api.LuaExportClass.class).autoMethods()) {
             addAutoMethods(table, instance, clazz);
         }
 
-        // Автоматически добавляем все публичные поля
         if (clazz.getAnnotation(ru.megantcs.enhancer.platform.loader.api.LuaExportClass.class).autoFields()) {
             addAutoFields(table, instance, clazz);
         }
@@ -133,7 +119,6 @@ public class LuaConverter {
                     !Modifier.isStatic(field.getModifiers()) &&
                     !field.isAnnotationPresent(ru.megantcs.enhancer.platform.loader.api.LuaExportField.class)) {
 
-                // Автоматически создаем геттер/сеттер для поля
                 table.set(field.getName(), new FieldAccessor(field, instance));
             }
         }
@@ -144,13 +129,10 @@ public class LuaConverter {
             @Override
             public Varargs invoke(Varargs args) {
                 try {
-                    // Конвертируем аргументы Lua в Java
                     Object[] javaArgs = convertArgs(method, args);
 
-                    // Вызываем метод
                     Object result = method.invoke(instance, javaArgs);
 
-                    // Конвертируем результат обратно в Lua
                     LuaValue luaResult = toLua(result);
                     return luaResult.isnil() ? LuaValue.NIL : luaResult;
                 } catch (Exception e) {
@@ -180,13 +162,12 @@ public class LuaConverter {
         LuaTable table = new LuaTable();
         Class<?> clazz = obj.getClass();
 
-        // Добавляем все публичные поля
         for (Field field : clazz.getDeclaredFields()) {
             if (Modifier.isPublic(field.getModifiers())) {
                 try {
                     table.set(field.getName(), toLua(field.get(obj)));
                 } catch (Exception e) {
-                    // Игнорируем недоступные поля
+                    // xd
                 }
             }
         }
@@ -194,9 +175,6 @@ public class LuaConverter {
         return table;
     }
 
-    /**
-     * Класс для доступа к полям объекта из Lua
-     */
     private static class FieldAccessor extends LuaUserdata {
         private final Field field;
         private final Object instance;
@@ -211,7 +189,6 @@ public class LuaConverter {
         private LuaTable createMetatable() {
             LuaTable mt = new LuaTable();
 
-            // При чтении поля - возвращаем значение
             mt.set(LuaValue.INDEX, new ZeroArgFunction() {
                 @Override
                 public LuaValue call() {
@@ -223,7 +200,6 @@ public class LuaConverter {
                 }
             });
 
-            // При записи в поле - устанавливаем значение
             mt.set(LuaValue.NEWINDEX, new OneArgFunction() {
                 @Override
                 public LuaValue call(LuaValue value) {

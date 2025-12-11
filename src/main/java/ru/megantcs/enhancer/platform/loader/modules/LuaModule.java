@@ -2,13 +2,9 @@ package ru.megantcs.enhancer.platform.loader.modules;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ru.megantcs.enhancer.platform.interfaces.Returnable;
 import ru.megantcs.enhancer.platform.loader.LuaEngine;
-
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
+import ru.megantcs.enhancer.platform.toolkit.api.FinishedFieldReflection;
 
 public abstract class LuaModule {
     protected final Logger LOGGER = LoggerFactory.getLogger(getClass());
@@ -36,6 +32,7 @@ public abstract class LuaModule {
     public final void moduleCleanup() {
         try {
             cleanup();
+            FinishedFieldReflection.finishObj(this);
         } catch (Exception e) {
             LOGGER.warn("Module cleanup failed: {}", getClass().getName(), e);
         }
@@ -50,5 +47,17 @@ public abstract class LuaModule {
         } finally {
             super.finalize();
         }
+    }
+
+    protected final void log(String message) {
+        LOGGER.info(message);
+    }
+
+    protected final void logOr(String message, boolean expression) {
+        if(expression) log(message);
+    }
+
+    protected final void logOr(String message, Returnable<Boolean> expression) {
+        if(expression.get()) log(message);
     }
 }
