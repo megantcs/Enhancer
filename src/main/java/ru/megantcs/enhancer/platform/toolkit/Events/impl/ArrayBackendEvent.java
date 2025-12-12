@@ -1,14 +1,13 @@
 package ru.megantcs.enhancer.platform.toolkit.Events.impl;
 
 import ru.megantcs.enhancer.platform.interfaces.Func;
-import ru.megantcs.enhancer.platform.toolkit.Events.api.Event;
+import ru.megantcs.enhancer.platform.toolkit.Events.api.EventInvoker;
 
 import java.lang.reflect.Array;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.function.Function;
 
-public class ArrayBabkendEvent<T> extends Event<T>
+public class ArrayBabkendEvent<T> extends EventInvoker<T>
 {
     Func<T[], T> invokerHandler;
     Set<T> subscribes;

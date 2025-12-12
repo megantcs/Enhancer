@@ -1,11 +1,13 @@
 package ru.megantcs.enhancer.platform.toolkit.Events;
 
 import ru.megantcs.enhancer.platform.interfaces.Func;
+import ru.megantcs.enhancer.platform.toolkit.Events.api.EventInvoker;
 
 import java.util.List;
 import java.util.Objects;
 
 public class FuncEvent<ArgumentType, ReturnType>
+        extends EventInvoker<Func<ArgumentType, ReturnType>>
 {
     private final List<FuncEventData<ArgumentType, ReturnType>> subscribes;
     private final ReturnType defaultValue;
@@ -13,6 +15,7 @@ public class FuncEvent<ArgumentType, ReturnType>
     public FuncEvent(List<FuncEventData<ArgumentType, ReturnType>> listType, ReturnType returnType) {
         subscribes = Objects.requireNonNull(listType);
         defaultValue = returnType;
+        this.invoker = this::emit;
     }
 
     public void register(Func<ArgumentType, ReturnType> event) {

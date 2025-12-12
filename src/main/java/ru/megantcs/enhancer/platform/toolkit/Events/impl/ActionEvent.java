@@ -1,18 +1,20 @@
 package ru.megantcs.enhancer.platform.toolkit.Events;
 
 import org.jetbrains.annotations.NotNull;
+import ru.megantcs.enhancer.platform.toolkit.Events.api.EventInvoker;
 import ru.megantcs.enhancer.platform.toolkit.Events.interfaces.Action;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-public class ActionEvent<T>
+public class ActionEvent<T> extends EventInvoker<Action<T>>
 {
     private final List<Action<T>> subscribes;
 
     public ActionEvent(@NotNull List<Action<T>> listType) {
         subscribes = Objects.requireNonNull(listType);
+        this.invoker = this::emit;
     }
 
     public void register(@NotNull Action<T> sub)
