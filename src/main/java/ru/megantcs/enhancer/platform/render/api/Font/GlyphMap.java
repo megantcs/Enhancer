@@ -1,4 +1,4 @@
-package ru.megantcs.enhancer.platform.render.api.Font;
+package thunder.hack.gui.font;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import it.unimi.dsi.fastutil.chars.Char2ObjectArrayMap;
@@ -7,7 +7,7 @@ import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.NativeImageBackedTexture;
 import net.minecraft.util.Identifier;
 import org.lwjgl.system.MemoryUtil;
-import ru.megantcs.enhancer.platform.mixin.accessors.NativeImageAccessor;
+import thunder.hack.injection.accesors.INativeImage;
 
 import java.awt.*;
 import java.awt.font.FontRenderContext;
@@ -132,7 +132,7 @@ class GlyphMap {
             int ow = bi.getWidth();
             int oh = bi.getHeight();
             NativeImage image = new NativeImage(NativeImage.Format.RGBA, ow, oh, false);
-            long ptr = ((NativeImageAccessor) (Object) image).getPointer();
+            @SuppressWarnings("DataFlowIssue") long ptr = ((INativeImage) (Object) image).getPointer();
             IntBuffer backingBuffer = MemoryUtil.memIntBuffer(ptr, image.getWidth() * image.getHeight());
             int off = 0;
             Object _d;

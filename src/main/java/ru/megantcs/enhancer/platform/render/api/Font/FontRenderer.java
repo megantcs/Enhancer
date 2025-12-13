@@ -1,4 +1,4 @@
-package ru.megantcs.enhancer.platform.render.api.Font;
+package thunder.hack.gui.font;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import it.unimi.dsi.fastutil.chars.Char2IntArrayMap;
@@ -16,7 +16,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL11;
-import ru.megantcs.enhancer.platform.interfaces.Minecraft;
+import thunder.hack.modules.client.HudEditor;
 
 import java.awt.*;
 import java.io.Closeable;
@@ -29,7 +29,9 @@ import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-public class FontRenderer implements Closeable, Minecraft {
+import static thunder.hack.core.IManager.mc;
+
+public class FontRenderer implements Closeable {
     private static final Char2IntArrayMap colorCodes = new Char2IntArrayMap() {{
         put('0', 0x000000);
         put('1', 0x0000AA);
@@ -208,7 +210,6 @@ public class FontRenderer implements Closeable, Minecraft {
                     continue;
                 }
 
-                /*
                 if(gradient) {
                     Color color = HudEditor.getColor(i * offset);
                     r2 = color.getRed() / 255f;
@@ -216,7 +217,6 @@ public class FontRenderer implements Closeable, Minecraft {
                     b2 = color.getBlue() / 255f;
                     a = color.getAlpha() / 255f;
                 }
-                */
 
                 if (c == '§') {
                     inSel = true;
