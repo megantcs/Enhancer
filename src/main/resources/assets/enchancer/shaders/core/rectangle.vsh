@@ -1,6 +1,6 @@
 #version 150
 
-#moj_import <mre:common.glsl>
+#moj_import <enchancer:common.glsl>
 
 in vec3 Position; // POSITION_COLOR vertex attributes
 in vec4 Color;

@@ -24,7 +24,7 @@ public class ReplaceProcessor implements TextPipeline.Processor {
     }
 
     private void init() {
-        replaceMap.putAll(LuaUtils.fixNamesMap());
+        replaceMap.putAll(LuaUtils.luaFixNameMap);
     }
 
     @Override

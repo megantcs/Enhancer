@@ -1,7 +1,6 @@
-package thunder.hack.gui.font;
+package ru.megantcs.enhancer.platform.render.api.Font;
 
 import org.jetbrains.annotations.NotNull;
-import thunder.hack.ThunderHack;
 
 import java.awt.*;
 import java.io.IOException;
@@ -34,6 +33,6 @@ public class FontRenderers {
     }
     
     public static @NotNull FontRenderer create(float size, String name) throws IOException, FontFormatException {
-        return new FontRenderer(Font.createFont(Font.TRUETYPE_FONT, Objects.requireNonNull(ThunderHack.class.getClassLoader().getResourceAsStream("assets/thunderhack/fonts/" + name + ".ttf"))).deriveFont(Font.PLAIN, size / 2f), size / 2f);
+        return new FontRenderer(Font.createFont(Font.TRUETYPE_FONT, Objects.requireNonNull(FontRenderers.class.getClassLoader().getResourceAsStream("assets/enchancer/fonts/" + name + ".ttf"))).deriveFont(Font.PLAIN, size / 2f), size / 2f);
     }
 }

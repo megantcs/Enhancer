@@ -9,6 +9,10 @@ import java.awt.*;
 
 import static ru.megantcs.enhancer.platform.loader.modules.impl.FabricEventsModule.MATRIX_STACK_INSTANCE;
 
+/**
+ * update libraries see {@link ru.megantcs.enhancer.platform.render.engine.common.luaLibraries}
+ */
+@Deprecated
 @LuaExportClass(name = "BufferBuilder")
 public class LibraryBufferBuilder {
 

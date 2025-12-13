@@ -1,4 +1,7 @@
 package ru.megantcs.enhancer.platform.toolkit.Dependency.api;
 
-public interface DependencyClass {
+@Deprecated
+public @interface DependencyClass
+{
+
 }

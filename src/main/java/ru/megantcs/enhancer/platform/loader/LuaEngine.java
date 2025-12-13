@@ -1,6 +1,6 @@
 package ru.megantcs.enhancer.platform.loader;
 
-import net.fabricmc.api.Environment;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.luaj.vm2.Globals;
@@ -16,7 +16,7 @@ import ru.megantcs.enhancer.platform.loader.api.LuaExportClass;
 import ru.megantcs.enhancer.platform.loader.api.LuaExportConstructor;
 import ru.megantcs.enhancer.platform.loader.api.LuaExportField;
 import ru.megantcs.enhancer.platform.loader.api.LuaExportMethod;
-import ru.megantcs.enhancer.platform.toolkit.Events.RunnableEvent;
+import ru.megantcs.enhancer.platform.toolkit.Events.impl.RunnableEvent;
 
 import java.io.IOException;
 import java.lang.reflect.*;
@@ -27,18 +27,29 @@ import java.util.*;
 import static ru.megantcs.enhancer.platform.loader.LuaConverter.convertArgs;
 
 public class LuaEngine {
+    private static boolean LE_COMMAND_DUMP = false;
     private static final Logger LOGGER = LoggerFactory.getLogger(LuaEngine.class);
     public static LuaEngine INSTANCE = new LuaEngine();
     private Globals environment;
     private final List<Class<?>> registeredClasses = new ArrayList<>();
-    private LuaPreprocessor preprocessor;
     public final RunnableEvent onLoadedScript = new RunnableEvent();
     private final Set<LuaChunk> chunks;
 
+    private Set<LuaChunk> exceptionsChunks;
+    private Set<LuaValue> exceptionsValues;
+
     private LuaEngine() {
         environment = JsePlatform.standardGlobals();
-        preprocessor = new LuaPreprocessor();
         chunks = new HashSet<>();
+
+        exceptionsChunks = new HashSet<>();
+        exceptionsValues = new HashSet<>();
+    }
+
+    public void reloadExceptions() {
+        exceptionsValues = new HashSet<>();
+        exceptionsChunks = new HashSet<>();
+        LuaConverter.restoreExceptions();
     }
 
     public void reloadEnvironment() {
@@ -67,10 +78,7 @@ public class LuaEngine {
 
         try {
             var newChunk = new LuaChunk(path, code, chunkName);
-            if (!executeChunk(newChunk, false)) {
-                 throw new RuntimeException("error execute chunk");
-            }
-            return true;
+            return executeChunk(newChunk, false);
         } catch (Exception e) {
             LOGGER.error("error load script: {}", chunkName, e);
             return false;
@@ -84,14 +92,22 @@ public class LuaEngine {
 
     private boolean executeChunk(LuaChunk value, boolean addValue) {
         try {
+            if(exceptionsChunks.contains(value))
+                return false;
+
+            if(LE_COMMAND_DUMP) {
+                Files.writeString(Path.of("le_dump.lua.dump"), value.content);
+            }
             if (addValue) chunks.add(value);
             value.load(environment).call();
+
             onLoadedScript.emit();
             LOGGER.info("execute chunk: " + value.name);
             return true;
         } catch (Exception e) {
             LOGGER.error("error execute chunk", e);
             LOGGER.error(value.getContent());
+            exceptionsChunks.add(value);
             return false;
         }
     }
@@ -223,7 +239,8 @@ public class LuaEngine {
         }
     }
 
-    private LuaValue createConstructorWrapper(Constructor<?> constructor) {
+    @Contract(value = "_ -> new", pure = true)
+    private @NotNull LuaValue createConstructorWrapper(Constructor<?> constructor) {
         return new VarArgFunction() {
             @Override
             public Varargs invoke(Varargs args) {
@@ -313,27 +330,23 @@ public class LuaEngine {
         classTable.setmetatable(metatable);
     }
 
-    public void execute(LuaValue value)
+    public boolean execute(LuaValue value)
     {
-        try {
-            if(value == null) return;
-
-            value.call();
-        }
-        catch (Exception e) {
-            LOGGER.error("error execute value", e);
-        }
+       return execute(value, null);
     }
 
-    public void execute(LuaValue value, LuaTable table)
+    public boolean execute(LuaValue value, LuaTable table)
     {
         try {
-            if(value == null) return;
-
+            if(value == null) return false;
+            if(exceptionsValues.contains(value)) return false;
             value.call(table);
+            return true;
         }
         catch (Exception e) {
+            exceptionsValues.add(value);
             LOGGER.error("error execute value", e);
+            return false;
         }
     }
 
@@ -341,6 +354,16 @@ public class LuaEngine {
     private LuaValue loadChunk(@NotNull String content, @NotNull String name, @NotNull Globals environment)
     {
         return environment.load(content, "chunk@" + name, environment);
+    }
+
+    public static LuaPreprocessor instancePreprocessor()
+    {
+        var preprocessor = new LuaPreprocessor();
+        preprocessor.registerPragmaCommand("le_command_dump", (e)->{
+            LE_COMMAND_DUMP = true;
+            return "-- #pragma le_command_dump"; // эхо
+        });
+        return preprocessor;
     }
 
     private static class LuaChunk {
@@ -371,8 +394,8 @@ public class LuaEngine {
                     return;
                 }
             }
-            var preprocessor = new LuaPreprocessor();
-            content = preprocessor.processCode(newContent);
+
+            content = instancePreprocessor().processCode(newContent);
         }
 
         public String readFile() {

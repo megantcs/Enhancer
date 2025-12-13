@@ -2,12 +2,12 @@ package ru.megantcs.enhancer.platform.toolkit.Callbacks;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.util.Window;
-import ru.megantcs.enhancer.platform.toolkit.Events.api.Event;
-import ru.megantcs.enhancer.platform.toolkit.Events.impl.ArrayBabkendEvent;
+import ru.megantcs.enhancer.platform.toolkit.Events.api.EventInvoker;
+import ru.megantcs.enhancer.platform.toolkit.Events.impl.ArrayBackendEvent;
 
 public interface WindowResizeCallback
 {
-    Event<WindowResizeCallback> EVENT = new ArrayBabkendEvent<>(WindowResizeCallback.class,(windowResizeCallbacks ->
+    EventInvoker<WindowResizeCallback> EVENT_INVOKER = new ArrayBackendEvent<>(WindowResizeCallback.class,(windowResizeCallbacks ->
             (client, window) ->
     {
         for(var callback : windowResizeCallbacks)

@@ -5,11 +5,17 @@ import net.minecraft.client.render.*;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.MathHelper;
 import org.joml.Matrix4f;
+import ru.megantcs.enhancer.platform.render.api.Shaders.BlurShader;
+import ru.megantcs.enhancer.platform.render.api.Shaders.RectangleShader;
 
 import java.awt.*;
 
+@Deprecated
 public class GraphicsContext
 {
+    public static RectangleShader RECTANGLE_SHADER;
+    public static BlurShader BLUR_SHADER;
+
     public static void horizontalGradient(MatrixStack matrixStack, float x, float y, float wight, float height, Color first, Color second)
     {
         GraphicsSystem.begin();
@@ -66,19 +72,25 @@ public class GraphicsContext
         GraphicsSystem.end();
     }
 
-    public static void preShaderDraw(MatrixStack matrices, float x, float y, float width, float height) {
+    public static BufferBuilder preShaderDraw(MatrixStack matrices, float x, float y, float width, float height)  {
+        return preShaderDraw(matrices, x, y, 0, width, height);
+    }
+
+    public static BufferBuilder preShaderDraw(MatrixStack matrices, float x, float y, float z, float width, float height) {
         GraphicsSystem.begin();
         BufferBuilder buffer = GraphicsSystem.instanceBuffer();
         Matrix4f matrix = matrices.peek().getPositionMatrix();
         buffer.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION);
-        setRectanglePoints(buffer, matrix, x, y, x + width, y + height);
+        setRectanglePoints(buffer, matrix, x, y, z, x + width, y + height);
+
+        return buffer;
     }
 
-    public static void setRectanglePoints(BufferBuilder buffer, Matrix4f matrix, float x, float y, float x1, float y1) {
-        buffer.vertex(matrix, x, y, 0).next();
-        buffer.vertex(matrix, x, y1, 0).next();
-        buffer.vertex(matrix, x1, y1, 0).next();
-        buffer.vertex(matrix, x1, y, 0).next();
+    public static void setRectanglePoints(BufferBuilder buffer, Matrix4f matrix, float x, float y, float z, float x1, float y1) {
+        buffer.vertex(matrix, x, y, z).next();
+        buffer.vertex(matrix, x, y1, z).next();
+        buffer.vertex(matrix, x1, y1, z).next();
+        buffer.vertex(matrix, x1, y, z).next();
     }
 
     public static void roundHorizontal(MatrixStack matrices, float x, float y, float width, float height, float radius, Color colorLeft, Color colorRight) {
@@ -133,7 +145,6 @@ public class GraphicsContext
         BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
         bufferBuilder.begin(VertexFormat.DrawMode.TRIANGLE_FAN, VertexFormats.POSITION_COLOR);
 
-        // Координаты углов с учетом радиуса
         double[][] corners = new double[][]{
                 new double[]{toX - radius, toY - radius, radius},
                 new double[]{toX - radius, fromY + radius, radius},
@@ -282,5 +293,47 @@ public class GraphicsContext
         }
 
         BufferRenderer.drawWithGlobalProgram(bufferBuilder.end());
+    }
+
+
+
+    public static void drawRect(MatrixStack matrices, float x, float y, float width, float height, float radius, float alpha, Color c1, Color c2, Color c3, Color c4) {
+        Tessellator tessellator = Tessellator.getInstance();
+        BufferBuilder buffer = tessellator.getBuffer();
+
+        Matrix4f matrix = matrices.peek().getPositionMatrix();
+        buffer.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION);
+
+        float x1 = x - 10;
+        float y1 = y - 10;
+        float x2 = x1 + width + 20;
+        float y2 = y1 + height + 20;
+
+        buffer.vertex(matrix, x1, y1, 0).next();
+        buffer.vertex(matrix, x1, y2, 0).next();
+        buffer.vertex(matrix, x2, y2, 0).next();
+        buffer.vertex(matrix, x2, y1, 0).next();
+
+        RECTANGLE_SHADER.setParameters(x, y, width, height, radius, alpha, c1, c2, c3, c4);
+        RECTANGLE_SHADER.use();
+
+        RenderSystem.enableBlend();
+        RenderSystem.defaultBlendFunc();
+        RenderSystem.disableCull();
+        RenderSystem.depthMask(false);
+
+        BufferRenderer.drawWithGlobalProgram(buffer.end());
+
+        RenderSystem.depthMask(true);
+        RenderSystem.enableCull();
+        RenderSystem.disableBlend();
+    }
+
+    public static void drawRoundedBlur(MatrixStack matrices, float x, float y, float width, float height, float radius, Color c1, float blurStrenth, float blurOpacity) {
+        BufferBuilder bb = preShaderDraw(matrices, x - 10, y - 10, width + 20, height + 20);
+        BLUR_SHADER.setParameters(x, y, width, height, radius, c1, blurStrenth, blurOpacity);
+        BLUR_SHADER.use();
+        BufferRenderer.drawWithGlobalProgram(bb.end());
+        GraphicsSystem.end();
     }
 }

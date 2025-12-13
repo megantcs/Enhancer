@@ -1,40 +1,45 @@
-package ru.megantcs.enhancer.platform.toolkit.Events;
+package ru.megantcs.enhancer.platform.toolkit.Events.impl;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import ru.megantcs.enhancer.platform.interfaces.Func;
 import ru.megantcs.enhancer.platform.toolkit.Events.api.EventInvoker;
+import ru.megantcs.enhancer.platform.toolkit.Events.api.EventLambdaSupported;
 
 import java.util.List;
 import java.util.Objects;
 
 public class FuncEvent<ArgumentType, ReturnType>
         extends EventInvoker<Func<ArgumentType, ReturnType>>
+        implements EventLambdaSupported<Func<ArgumentType, ReturnType>>
 {
     private final List<FuncEventData<ArgumentType, ReturnType>> subscribes;
     private final ReturnType defaultValue;
 
-    public FuncEvent(List<FuncEventData<ArgumentType, ReturnType>> listType, ReturnType returnType) {
+    public FuncEvent(List<FuncEventData<ArgumentType, ReturnType>> listType,
+                     @Nullable ReturnType returnType) {
         subscribes = Objects.requireNonNull(listType);
         defaultValue = returnType;
         this.invoker = this::emit;
     }
 
-    public void register(Func<ArgumentType, ReturnType> event) {
-        subscribes.add(new FuncEventData<>(Objects.requireNonNull(event), "@" + event.hashCode()));
+    public void register(@NotNull Func<ArgumentType, ReturnType> event) {
+        subscribes.add(new FuncEventData<>(Objects.requireNonNull(event, "event cannot be null"), "func#event@" + event.hashCode()));
     }
 
-    public void register(Func<ArgumentType, ReturnType> event, String name) {
+    public void register(@NotNull Func<ArgumentType, ReturnType> event,
+                         @NotNull String name) {
         subscribes.add(new FuncEventData<>(event, name));
     }
 
-    public boolean unregister(Func<ArgumentType, ReturnType> event)
-    {
-        Objects.requireNonNull(event);
+    public boolean unregister(@NotNull Func<ArgumentType, ReturnType> event) {
+        Objects.requireNonNull(event, "event cannot be null");
         return subscribes.removeIf((data)-> data.subscribe == event);
     }
 
     public boolean unregister(String name)
     {
-        Objects.requireNonNull(name);
+        Objects.requireNonNull(name, "name cannot be null");
         return subscribes.removeIf((data) -> Objects.equals(data.name, name));
     }
 

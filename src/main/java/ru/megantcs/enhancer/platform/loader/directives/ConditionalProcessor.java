@@ -1,5 +1,6 @@
 package ru.megantcs.enhancer.platform.loader.directives;
 
+import ru.megantcs.enhancer.platform.loader.LuaPreprocessor;
 import ru.megantcs.enhancer.platform.loader.TextPipeline;
 import ru.megantcs.enhancer.platform.loader.directives.DefineProcessor.MacroDefinition;
 
@@ -8,6 +9,7 @@ import java.util.Stack;
 
 public class ConditionalProcessor implements TextPipeline.Processor {
     final Map<String, MacroDefinition> defines;
+    final LuaPreprocessor preprocessor;
 
     private static class ConditionState {
         final boolean condition;
@@ -19,8 +21,9 @@ public class ConditionalProcessor implements TextPipeline.Processor {
         }
     }
 
-    public ConditionalProcessor(Map<String, MacroDefinition> defines) {
+    public ConditionalProcessor(Map<String, MacroDefinition> defines, LuaPreprocessor preprocessor) {
         this.defines = defines;
+        this.preprocessor = preprocessor;
     }
 
     @Override
@@ -33,6 +36,7 @@ public class ConditionalProcessor implements TextPipeline.Processor {
         for (int i = 0; i < lines.length; i++) {
             String line = lines[i].trim();
             String originalLine = lines[i];
+            int curIndex = i + preprocessor.getIndex();
 
             if (line.startsWith("#if ")) {
                 String condition = line.substring(4).trim();
@@ -43,12 +47,20 @@ public class ConditionalProcessor implements TextPipeline.Processor {
             } else if (line.startsWith("#ifdef ")) {
                 String macroName = line.substring(7).trim();
                 boolean conditionResult = defines.containsKey(macroName);
+                if(conditionResult) {
+                    var macro = defines.get(macroName);
+                    if(macro.pos < curIndex) continue;
+                }
                 conditionStack.push(new ConditionState(conditionResult, currentlyEnabled));
                 currentlyEnabled = currentlyEnabled && conditionResult;
                 continue;
             } else if (line.startsWith("#ifndef ")) {
                 String macroName = line.substring(8).trim();
                 boolean conditionResult = !defines.containsKey(macroName);
+                if(!conditionResult) {
+                    var macro = defines.get(macroName);
+                    if(macro.pos > curIndex) continue;
+                }
                 conditionStack.push(new ConditionState(conditionResult, currentlyEnabled));
                 currentlyEnabled = currentlyEnabled && conditionResult;
                 continue;

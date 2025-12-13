@@ -1,4 +1,6 @@
 package ru.megantcs.enhancer.platform.toolkit.Dependency.api;
 
-public interface Lifecycle {
+public interface Lifecycle extends Initializable, Shutdownable
+{
+
 }

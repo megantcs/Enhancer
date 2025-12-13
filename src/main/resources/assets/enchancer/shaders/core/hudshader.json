@@ -5,7 +5,7 @@
     "dstrgb": "1-srcalpha"
   },
   "vertex": "position",
-  "fragment": "thunderhack:hudshader",
+  "fragment": "enchancer:hudshader",
   "attributes": [],
   "samplers": [],
   "uniforms": [

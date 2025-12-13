@@ -1,5 +1,6 @@
 package ru.megantcs.enhancer.platform.loader.directives;
 
+import ru.megantcs.enhancer.platform.loader.LuaPreprocessor;
 import ru.megantcs.enhancer.platform.loader.TextPipeline;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,18 +11,22 @@ import java.util.Map;
 public class DefineProcessor implements TextPipeline.Processor {
     private static final Logger LOG = LoggerFactory.getLogger(DefineProcessor.class);
     final Map<String, MacroDefinition> defines;
+    private final LuaPreprocessor preprocessor;
 
-    public static class MacroDefinition {
+    public static class MacroDefinition
+    {
+        public final int pos;
         public final String name;
         public final String[] parameters;
         public final String body;
         public final boolean hasValue;
 
-        public MacroDefinition(String name, String[] parameters, String body, boolean hasValue) {
+        public MacroDefinition(String name, String[] parameters, String body, boolean hasValue, int pos) {
             this.name = name;
             this.parameters = parameters;
             this.body = body;
             this.hasValue = hasValue;
+            this.pos = pos;
         }
 
         public boolean hasParameters() {
@@ -29,18 +34,18 @@ public class DefineProcessor implements TextPipeline.Processor {
         }
     }
 
-    public DefineProcessor(Map<String, MacroDefinition> defines) {
+    public DefineProcessor(Map<String, MacroDefinition> defines, LuaPreprocessor preprocessor) {
         this.defines = defines;
+        this.preprocessor = preprocessor;
     }
 
     @Override
     public String process(String input) {
-
-
         StringBuilder result = new StringBuilder();
         String[] lines = input.split("\n");
 
         for (int i = 0; i < lines.length; i++) {
+            int curIndex = i + preprocessor.getIndex();
             String line = lines[i].trim();
 
             if (line.startsWith("#define ")) {
@@ -58,11 +63,9 @@ public class DefineProcessor implements TextPipeline.Processor {
 
                 String fullMacro = macroLines.toString().replace("\\\n", " ").replace("\\\r\n", " ");
 
-
-                MacroDefinition macro = parseMacro(fullMacro);
-                if (macro != null) {
+                MacroDefinition macro = parseMacro(fullMacro, curIndex);
+                if(!defines.containsKey(macro.name)) {
                     defines.put(macro.name, macro);
-
                 }
             } else {
                 result.append(lines[i]).append("\n");
@@ -73,12 +76,12 @@ public class DefineProcessor implements TextPipeline.Processor {
         return result.toString();
     }
 
-    private MacroDefinition parseMacro(String macro) {
+    private MacroDefinition parseMacro(String macro, int i) {
         macro = macro.trim();
 
         int firstSpace = macro.indexOf(' ');
         if (firstSpace == -1) {
-            return new MacroDefinition(macro, null, "", false);
+            return new MacroDefinition(macro, null, "", false, i);
         }
 
         String namePart;
@@ -96,14 +99,14 @@ public class DefineProcessor implements TextPipeline.Processor {
                 String paramsStr = namePart.substring(openParen + 1, closeParen);
 
                 String[] parameters = paramsStr.isEmpty() ? new String[0] : paramsStr.split("\\s*,\\s*");
-                return new MacroDefinition(macroName, parameters, bodyPart, true);
+                return new MacroDefinition(macroName, parameters, bodyPart, true, i);
             }
         }
 
         namePart = macro.substring(0, firstSpace);
         bodyPart = macro.substring(firstSpace + 1).trim();
 
-        return new MacroDefinition(namePart, null, bodyPart, true);
+        return new MacroDefinition(namePart, null, bodyPart, true, i);
     }
 
     private int findMatchingParenthesis(String str, int openPos) {

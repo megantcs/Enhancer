@@ -124,18 +124,26 @@ public class LuaConverter {
         }
     }
 
+    private static Set<Method> exceptionMethods = new HashSet<>();
+
+    public static void restoreExceptions() {
+        exceptionMethods = new HashSet<>();
+    }
+
     private static LuaValue createMethodWrapper(Method method, Object instance) {
         return new VarArgFunction() {
             @Override
             public Varargs invoke(Varargs args) {
                 try {
-                    Object[] javaArgs = convertArgs(method, args);
+                    if(exceptionMethods.contains(method)) return LuaValue.NIL;
 
+                    Object[] javaArgs = convertArgs(method, args);
                     Object result = method.invoke(instance, javaArgs);
 
                     LuaValue luaResult = toLua(result);
                     return luaResult.isnil() ? LuaValue.NIL : luaResult;
                 } catch (Exception e) {
+                    exceptionMethods.add(method);
                     LOGGER.error("Error calling method " + method.getName(), e);
                     return LuaValue.NIL;
                 }

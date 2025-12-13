@@ -6,6 +6,5 @@ import java.lang.annotation.*;
 @Target({ElementType.METHOD, ElementType.CONSTRUCTOR})
 public @interface LuaExportMethod {
     String name() default "";
-    String description() default "";
     boolean requireInit() default false;
 }

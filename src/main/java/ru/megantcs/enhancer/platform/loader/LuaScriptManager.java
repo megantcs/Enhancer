@@ -51,6 +51,7 @@ public class LuaScriptManager {
 
         shutdown();
 
+        engine.reloadExceptions();
         engine.reloadEnvironment();
 
         for (Class<? extends LuaModule> moduleClass : moduleClasses) {

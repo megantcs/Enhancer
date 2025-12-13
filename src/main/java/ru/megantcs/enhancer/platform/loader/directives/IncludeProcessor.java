@@ -36,13 +36,12 @@ public class IncludeProcessor implements TextPipeline.Processor {
 
                 try {
                     String includedContent = Files.readString(Path.of(filename));
-
+                    preprocessor.addIndex(includedContent.split("\n").length);
                     String processedContent = preprocessor.processCode(includedContent);
 
                     result.append("-- # include '").append(filename).append("' start\n");
                     result.append(processedContent);
                     result.append("\n-- # include '").append(filename).append("' end\n");
-
                 } catch (IOException e) {
                     result.append("-- # error including '").append(filename).append("': ").append(e.getMessage()).append("\n");
                 } finally {

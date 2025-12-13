@@ -18,11 +18,12 @@ public class FabricEventsModule extends LuaModule
     private LuaValue renderCallback = null;
     private Runnable onLoadedChunk;
     private LuaEngine engine;
+    private boolean isError;
 
     @Override
     protected void init(LuaEngine engine) {
         registerEvents();
-
+        isError = false;
         if(onLoadedChunk == null) {
             onLoadedChunk = this::executeChunk;
         }
@@ -37,11 +38,13 @@ public class FabricEventsModule extends LuaModule
             DRAW_CONTEXT_INSTANCE = dc;
 
             if (this.renderCallback == null) return;
+            if(isError) return;
 
             try {
                 engine.execute(renderCallback);
             } catch (Exception e) {
                 LOGGER.error("error render callback", e);
+                isError = true;
             }
         });
     }

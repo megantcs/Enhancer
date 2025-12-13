@@ -5,6 +5,7 @@ import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.render.Tessellator;
 
+@Deprecated
 public class GraphicsSystem
 {
     public static void begin()

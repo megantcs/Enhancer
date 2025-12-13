@@ -1,39 +1,44 @@
 #version 150
 
-#moj_import <mre:common.glsl>
+uniform sampler2D InputSampler;
+uniform vec2 InputResolution;
+uniform vec2 uSize;
+uniform vec2 uLocation;
 
-in vec2 FragCoord; // normalized fragment coord relative to the primitive
-in vec2 TexCoord;
-in vec4 FragColor;
+uniform float radius;
+uniform float Brightness;
+uniform float Quality;
+uniform vec4 color1;
+in vec2 texCoord;
 
-uniform sampler2D Sampler0;
-uniform vec2 Size; // rectangle size
-uniform vec4 Radius; // radius for each vertex
-uniform float Smoothness; // edge smoothness
-uniform float BlurRadius;
+out vec4 fragColor;
 
-out vec4 OutColor;
+float roundedBoxSDF(vec2 center, vec2 size, float radius) {
+    return length(max(abs(center) - size + radius, 0.0)) - radius;
+}
 
-const float DPI = 6.28318530718;
-const float STEP = DPI / 16.0;
+vec4 blur() {
+    #define TAU 6.28318530718
 
-void main() {
-    vec2 multiplier = BlurRadius / textureSize(Sampler0, 0);
-    
-    vec3 average = texture(Sampler0, TexCoord).rgb;
-    for (float d = 0.0; d < DPI; d += STEP) {
+    vec2 Radius = Quality / InputResolution.xy;
+
+    vec2 uv = gl_FragCoord.xy / InputResolution.xy;
+    vec4 Color = texture(InputSampler, uv);
+
+    float step =  TAU / 16.0;
+
+    for (float d = 0.0; d < TAU; d += step) {
         for (float i = 0.2; i <= 1.0; i += 0.2) {
-            average += texture(Sampler0, TexCoord + vec2(cos(d), sin(d)) * multiplier * i).rgb;
+            Color += texture(InputSampler, uv + vec2(cos(d), sin(d)) * Radius * i);
         }
     }
-    average /= 80.0;
 
-    vec4 color = vec4(average, 1.0) * FragColor;
-    color.a *= ralpha(Size, FragCoord, Radius, Smoothness);
+    Color /= 80;
+    return (Color + color1) * Brightness;
+}
 
-    if (color.a == 0.0) { // alpha test
-        discard;
-    }
-
-    OutColor = color;
+void main() {
+    vec2 halfSize = uSize / 2.0;
+    float smoothedAlpha =  (1.0 - smoothstep(0.0, 1.0, roundedBoxSDF(gl_FragCoord.xy - uLocation - halfSize, halfSize, radius)));
+    fragColor = vec4(blur().rgb, smoothedAlpha);
 }

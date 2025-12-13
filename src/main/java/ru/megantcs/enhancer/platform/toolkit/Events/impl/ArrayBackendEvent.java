@@ -7,14 +7,14 @@ import java.lang.reflect.Array;
 import java.util.HashSet;
 import java.util.Set;
 
-public class ArrayBabkendEvent<T> extends EventInvoker<T>
+public class ArrayBackendEvent<T> extends EventInvoker<T>
 {
     Func<T[], T> invokerHandler;
     Set<T> subscribes;
 
     final Class<T> type;
 
-    public ArrayBabkendEvent(Class<T> type, Func<T[], T> invokerHandler)
+    public ArrayBackendEvent(Class<T> type, Func<T[], T> invokerHandler)
     {
         this.type = type;
         this.invokerHandler = invokerHandler;

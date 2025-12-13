@@ -14,19 +14,20 @@ public class FinishedFieldReflection
         for (Field field : fields)
         {
             try {
-                if (!field.isAccessible()) {
-                    field.setAccessible(true);
-                }
+                if (!field.isAccessible()) field.setAccessible(true);
+
                 FinishedField data = field.getAnnotation(FinishedField.class);
                 if(data == null) continue;
 
-                field.set(obj, null);
+                if(data.deleter() == null)
+                {
+                    // skip<
+                    continue;
+                }
+
+                data.deleter().newInstance().delete(obj, field);
             }
-            catch (IllegalAccessException e) {
-                /*
-                *
-                * */
-            }
+            catch (IllegalAccessException | InstantiationException ignored) {}
         }
     }
 }

@@ -11,9 +11,12 @@ import ru.megantcs.enhancer.platform.loader.api.LuaExportClass;
 import ru.megantcs.enhancer.platform.loader.api.LuaExportMethod;
 import ru.megantcs.enhancer.platform.render.api.Graphics.GraphicsSystem;
 
+/**
+ * update libraries see {@link ru.megantcs.enhancer.platform.render.engine.common.luaLibraries}
+ */
+@Deprecated
 @LuaExportClass(name = "RenderSystem")
 public class LibraryRenderSystem {
-
     @LuaExportMethod
     public LibraryRenderSystem() {}
 

@@ -11,7 +11,6 @@ import net.minecraft.client.util.Window;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import ru.megantcs.enhancer.platform.interfaces.Minecraft;
-import ru.megantcs.enhancer.platform.render.api.Font.FontRender;
 import ru.megantcs.enhancer.platform.render.api.FontStyle;
 import ru.megantcs.enhancer.platform.render.api.Graphics.GraphicsContext;
 import ru.megantcs.enhancer.platform.render.api.Graphics.GraphicsSystem;
@@ -44,12 +43,6 @@ public class Graphics implements Minecraft
         mc.textRenderer.draw(text, x,y, brush.get(0).getRGB(),style == FontStyle.SHADOW, matrixStack.peek().getPositionMatrix(), immediate, TextRenderer.TextLayerType.NORMAL, 0, 15728880, mc.textRenderer.isRightToLeft());
         immediate.draw();
         GraphicsSystem.end();
-    }
-
-
-    public void drawTextFont(FontRender font, float x, float y, String text, Brush brush) {
-        Objects.requireNonNull(font);
-        font.getFontRenderer().drawString(matrixStack, text, x, y, brush.get(0));
     }
 
     public void drawRect(float x, float y, float width, float height, Brush brush)

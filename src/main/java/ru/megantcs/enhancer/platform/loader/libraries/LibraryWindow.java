@@ -8,6 +8,10 @@ import ru.megantcs.enhancer.platform.loader.api.LuaExportMethod;
 
 import java.util.Objects;
 
+/**
+ * update libraries see {@link ru.megantcs.enhancer.platform.render.engine.common.luaLibraries}
+ */
+@Deprecated
 @LuaExportClass(name = "Window")
 public class LibraryWindow
 {

@@ -1,6 +1,8 @@
 package ru.megantcs.enhancer.platform.toolkit.Colors;
 
 import ru.megantcs.enhancer.platform.interfaces.Func;
+import ru.megantcs.enhancer.platform.loader.api.LuaExportClass;
+import ru.megantcs.enhancer.platform.loader.api.LuaExportMethod;
 
 import java.awt.*;
 import java.util.*;
@@ -18,6 +20,7 @@ public class Brush
         for(int i = 0; i < count; i++)
             colors.add(mainColor);
     }
+
     public Brush(Color... colors) {
         this.colors.addAll(List.of(colors));
     }
@@ -123,5 +126,10 @@ public class Brush
 
     public static Brush of(int r, int g, int b, int a) {
         return new Brush(new Color(r, g, b, a));
+    }
+
+    public Color second()
+    {
+        return get(1);
     }
 }

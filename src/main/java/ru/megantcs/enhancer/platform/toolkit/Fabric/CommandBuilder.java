@@ -24,7 +24,9 @@ public class CommandBuilder
     public CommandBuilder orArg(String argument, Action<CommandContext<FabricClientCommandSource>> action) {
         builder.then(literal(argument)
                 .executes(context -> {
-                    action.invoke(context);
+                    if(action != null) {
+                        action.invoke(context);
+                    }
                     return Command.SINGLE_SUCCESS;
                 }));
         return this;

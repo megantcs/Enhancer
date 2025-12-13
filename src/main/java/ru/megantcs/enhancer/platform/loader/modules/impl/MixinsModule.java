@@ -23,6 +23,9 @@ public class MixinsModule extends LuaModule
     @FinishedField
     private LuaValue scoreboard$header;
 
+    @FinishedField
+    private LuaValue scoreboard$end;
+
     @Override
     protected void init(LuaEngine engine)
     {
@@ -43,10 +46,23 @@ public class MixinsModule extends LuaModule
         ScoreboardRenderHook.RENDER_HEADER.unregister("scoreboard$background");
         ScoreboardRenderHook.RENDER_SEPARATOR.unregister("scoreboard$separator");
         ScoreboardRenderHook.RENDER_SEPARATOR.unregister("scoreboard$header");
+        ScoreboardRenderHook.RENDER_END.unregister("scoreboard$end");
     }
 
     private void updateHooks()
     {
+        ScoreboardRenderHook.RENDER_END.register((data)->{
+            if(scoreboard$end == null) return false;
+
+            try {
+                scoreboard$end.call();
+                return true;
+            } catch (RuntimeException e) {
+                LOGGER.error("error hook", e);
+            }
+
+            return false;
+        }, "scoreboard$end");
         ScoreboardRenderHook.RENDER_BACKGROUND.register((data)->{
             if(scoreboard$background == null) return false;
             try {
@@ -94,9 +110,12 @@ public class MixinsModule extends LuaModule
         scoreboard$background = engine.getMethod("mixin@scoreboard$background");
         scoreboard$separator  = engine.getMethod("mixin@scoreboard$separator");
         scoreboard$header     = engine.getMethod("mixin@scoreboard$header");
+        scoreboard$end        = engine.getMethod("mixin@scoreboard$end");
 
         logOr("mixin found scoreboard$background", scoreboard$background != null);
         logOr("mixin found scoreboard$separator", scoreboard$separator != null);
         logOr("mixin found scoreboard$header", scoreboard$header != null);
+        logOr("mixin found scoreboard$end", scoreboard$end != null);
+
     }
 }

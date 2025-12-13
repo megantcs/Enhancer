@@ -12,6 +12,8 @@ import java.util.Map;
 
 public class LuaUtils
 {
+    public static final Map<String, String> luaFixNameMap;
+
     public static LuaValue createMethodWrapper(Method method, Object instance, Logger LOGGER) {
         return new VarArgFunction() {
             @Override
@@ -36,22 +38,21 @@ public class LuaUtils
         };
     }
 
-    public static Map<String, String> fixNamesMap() {
-        Map<String, String> map = new HashMap<>();
-        map.put("~", "_");
-        map.put("@", "_");
-        map.put("$", "_");
-
-        return map;
-    }
-
     public static String fixName(String name)
     {
         var result = name;
-        for(var key : fixNamesMap().keySet()) {
-            result = result.replace(key, fixNamesMap().get(key));
+        for(var key : luaFixNameMap.keySet()) {
+            result = result.replace(key, luaFixNameMap.get(key));
         }
 
         return result;
+    }
+
+    static {
+        luaFixNameMap = new HashMap<>(Map.of(
+                "~", "_",
+                "@", "_",
+                "$", "_"
+        ));
     }
 }

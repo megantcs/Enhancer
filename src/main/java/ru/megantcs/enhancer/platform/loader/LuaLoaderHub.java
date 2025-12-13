@@ -3,7 +3,7 @@ package ru.megantcs.enhancer.platform.loader;
 import ru.megantcs.enhancer.platform.interfaces.ResolveClient;
 import ru.megantcs.enhancer.platform.loader.modules.LuaModule;
 import ru.megantcs.enhancer.platform.loader.modules.LuaModuleLoader;
-import ru.megantcs.enhancer.platform.toolkit.Events.RunnableEvent;
+import ru.megantcs.enhancer.platform.toolkit.Events.impl.RunnableEvent;
 
 @Deprecated
 public class LuaLoaderHub implements ResolveClient

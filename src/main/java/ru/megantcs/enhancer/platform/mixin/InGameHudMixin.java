@@ -109,6 +109,8 @@ public class InGameHudMixin implements Minecraft
 
                 int titleX = scoreboardLeft + maxWidth / 2 - titleWidth / 2;
                 context.drawText(textRenderer, objectiveTitle, titleX, rowY - 9, -1, false);
+
+                ScoreboardRenderHook.RENDER_END.emit(null);
             }
         }
     }
@@ -134,7 +136,7 @@ public class InGameHudMixin implements Minecraft
         var cancel = ScoreboardRenderHook.RENDER_BACKGROUND.emit(new ScoreboardRenderHook.RenderInfo(
                 context, left, top, right, bottom, backgroundColor));
 
-        if(!cancel) context.fill(left, top, right, bottom, Color.white.getRGB());
+        if(!cancel) context.fill(left, top, right, bottom, backgroundColor);
     }
 
     @Unique
@@ -145,6 +147,6 @@ public class InGameHudMixin implements Minecraft
         var cancel = ScoreboardRenderHook.RENDER_HEADER.emit(new ScoreboardRenderHook.RenderInfo(
                 context, left, top, right, bottom, headerColor));
 
-        if(!cancel) context.fill(left, top, right, bottom, Color.yellow.getRGB());
+        if(!cancel) context.fill(left, top, right, bottom, headerColor);
     }
 }

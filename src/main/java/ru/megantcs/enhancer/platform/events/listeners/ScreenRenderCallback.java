@@ -4,11 +4,11 @@ import net.minecraft.client.gui.DrawContext;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import ru.megantcs.enhancer.platform.interfaces.mixins.DrawableMixin;
 import ru.megantcs.enhancer.platform.toolkit.Events.EventFactory;
-import ru.megantcs.enhancer.platform.toolkit.Events.api.Event;
+import ru.megantcs.enhancer.platform.toolkit.Events.api.EventInvoker;
 
 public interface ScreenRenderCallback extends DrawableMixin
 {
-    Event<ScreenRenderCallback> GAME_MENU_POST = EventFactory
+    EventInvoker<ScreenRenderCallback> GAME_MENU_POST = EventFactory
             .makeArrayBackend(ScreenRenderCallback.class, (subscribes)->
                     ((context, mouseX, mouseY, delta, ci) ->
     {
